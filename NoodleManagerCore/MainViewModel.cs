@@ -7,7 +7,7 @@ using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
+using System.Text.Json;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -43,7 +43,7 @@ namespace NoodleManager
             JsonSerializerOptions options = new JsonSerializerOptions();
             options.PropertyNameCaseInsensitive = true;
 
-            ObservableCollection<Song> data = JsonSerializer.Parse<ObservableCollection<Song>>(content, options);
+            ObservableCollection<Song> data = JsonSerializer.Deserialize<ObservableCollection<Song>>(content, options);
             Songs = data;
         }
     }

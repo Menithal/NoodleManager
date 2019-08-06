@@ -21,8 +21,9 @@ namespace NoodleManager
         [Reactive] public string Cover_url { get; set; }
         [Reactive] public string Duration { get; set; }
         [Reactive] public string Bpm { get; set; }
-        [Reactive] public IEnumerable<string> Difficulties { get; set; }
+        public ObservableCollection<string> Difficulties { get; set; }
         [Reactive] public bool IsSelected { get; set; }
+        [Reactive] public bool IsDownloaded { get; set; }
 
 
         public string Filename_original { get; set; }
@@ -41,15 +42,23 @@ namespace NoodleManager
         public extern bool Expert { [ObservableAsProperty] get; }
         public extern bool Master { [ObservableAsProperty] get; }
 
+        public int count = 0;
+
         public Song()
         {
-            this.WhenAny(x => x.Title, x => !string.IsNullOrWhiteSpace(x.GetValue())).ToPropertyEx(this, x => x.Enabled);
+            Setup();
+        }
 
-            this.WhenAnyValue(x => x.Difficulties).Select(items => items != null && items.Any(i => i == "Easy")).ToPropertyEx(this, x => x.Easy);
-            this.WhenAnyValue(x => x.Difficulties).Select(items => items != null && items.Any(i => i == "Normal")).ToPropertyEx(this, x => x.Normal);
-            this.WhenAnyValue(x => x.Difficulties).Select(items => items != null && items.Any(i => i == "Hard")).ToPropertyEx(this, x => x.Hard);
-            this.WhenAnyValue(x => x.Difficulties).Select(items => items != null && items.Any(i => i == "Expert")).ToPropertyEx(this, x => x.Expert);
-            this.WhenAnyValue(x => x.Difficulties).Select(items => items != null && items.Any(i => i == "Master")).ToPropertyEx(this, x => x.Master);
+        public void Setup()
+        {
+            //this.WhenAny(x => x.Title, x => !string.IsNullOrWhiteSpace(x.GetValue())).ToPropertyEx(this, x => x.Enabled);
+
+            Difficulties = new ObservableCollection<string>();
+            Difficulties.ToObservableChangeSet(x => x).ToCollection().Select(items => items.Any(i => i == "Easy")).ToPropertyEx(this, x => x.Easy);
+            Difficulties.ToObservableChangeSet(x => x).ToCollection().Select(items => items.Any(i => i == "Normal")).ToPropertyEx(this, x => x.Normal);
+            Difficulties.ToObservableChangeSet(x => x).ToCollection().Select(items => items.Any(i => i == "Hard")).ToPropertyEx(this, x => x.Hard);
+            Difficulties.ToObservableChangeSet(x => x).ToCollection().Select(items => items.Any(i => i == "Expert")).ToPropertyEx(this, x => x.Expert);
+            Difficulties.ToObservableChangeSet(x => x).ToCollection().Select(items => items.Any(i => i == "Master")).ToPropertyEx(this, x => x.Master);
         }
     }
 }

@@ -6,61 +6,311 @@
         xmlns:local="clr-namespace:NoodleManager"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
+        x:Name="mainWindow"
         Background="#FF181818"
         WindowStyle="None"
         WindowState="Normal" 
         AllowsTransparency="True"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True"
+        KeyboardNavigation.TabNavigation="None"
         ResizeMode="CanResize">
 
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <!--Templates and Styles-->
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Colors.xaml"/>
+                <ResourceDictionary Source="SharedStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-        <Grid x:Name="TopGrid" ShowGridLines="True">
+            <Style x:Key="DefaultButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource ControlBackgroundColor}" />
+                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderColor}" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="BorderThickness" Value="3" />
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            SnapsToDevicePixels="true">
+                                <Border CornerRadius="6" Margin="-1" Background="{TemplateBinding Background}" BorderThickness="0">
+                                    <ContentPresenter Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource SelectedHilightColor}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource SelectedHilightColor}" />
+                                </Trigger>
+
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                                    <Setter Property="Background" Value="{StaticResource SelectedHilightColor}" />
+                                    <Setter Property="BorderBrush" Value="{StaticResource SelectedHilightColor}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="TabButtonStyle" TargetType="ToggleButton">
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Border>
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource SelectedHilightColor}" />
+                                </Trigger>
+
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter Property="Foreground" Value="{StaticResource UnselectedHilightColor}" />
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="PathBoxStyle" TargetType="TextBox">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                <Setter Property="Background" Value="{StaticResource ControlBackgroundColor}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderColor}" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBoxBase">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <DataTrigger Binding="{Binding Path=PathValid}" Value="False">
+                                    <Setter Property="BorderBrush" Value="{StaticResource PathInvalidColor}"/>
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="SearchBoxStyle" TargetType="TextBox">
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+                <Setter Property="Background" Value="{StaticResource ControlBackgroundColor}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderColor}" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBoxBase">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource SelectedHilightColor}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="25" />
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.ColumnSpan="2" Name="Border"
+                        BorderBrush="{StaticResource ControlBorderColor}" 
+                        CornerRadius="0" BorderThickness="2" 
+                        Background="{StaticResource ControlBackgroundColor}" />
+                    <Border Grid.Column="1"  BorderBrush="{StaticResource ControlBorderColor}" Name="ButtonBorder"
+                        CornerRadius="0" BorderThickness="2" 
+                        Background="{StaticResource ControlBackgroundColor}" />
+                    <Path Name="Arrow" Grid.Column="1" 
+                        Data="M0,0 L0,4 L8,12 L16,4 L16,0 L8,8 z"
+                        HorizontalAlignment="Center" Fill="{StaticResource UnselectedHilightColor}"
+                        VerticalAlignment="Center" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="ToggleButton.IsMouseOver" Value="True">
+                        <Setter Property="Shape.Fill" TargetName="Arrow" Value="{StaticResource SelectedHilightColor}"/>
+                    </Trigger>
+                    <Trigger Property="ToggleButton.IsChecked" Value="True">
+                        <Setter Property="Shape.Fill" TargetName="Arrow" Value="{StaticResource SelectedHilightColor}"/>
+                        <Setter TargetName="ButtonBorder" Property="Border.BorderBrush" Value="{StaticResource SelectedHilightColor}"/>
+                        <Setter TargetName="Border" Property="Border.BorderBrush" Value="{StaticResource SelectedHilightColor}"/>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
+            <Style x:Key="ComboScrollViewerStyle" 
+                TargetType="ScrollViewer">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" 
+                            Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="ComboBoxStyle"  TargetType="ComboBox">
+                <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+                <Setter Property="TextElement.Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <ToggleButton Grid.Column="2"
+                                    ClickMode="Press" Focusable="False"
+                                    IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+                                <ContentPresenter Margin="7, 3, 28, 3" IsHitTestVisible="False"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center"                              
+                                    Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                                    ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                                <Popup Placement="Bottom"
+                                    Focusable="False" AllowsTransparency="True"
+                                    IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
+                                    PopupAnimation="Slide">
+                                    <Grid SnapsToDevicePixels="True" 
+                                        MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
+                                        MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
+                                        <Border Name="DropDownBorder" Background="{StaticResource ControlBackgroundColor}" Margin="0, 2, 0, 0"
+                                            CornerRadius="0" BorderThickness="2" 
+                                            BorderBrush="{StaticResource ControlBorderColor}"/>
+                                        <ScrollViewer Margin="4,6,4,4" SnapsToDevicePixels="True">
+                                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+
+    <!--Actual Content-->
+    <Grid>
+
+        <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Margin="3,5,3,5" Content = "Add" Grid.Column="0"/>
-            <Button Margin="3,5,3,5" Content = "Delete" Grid.Column="1"
-                    Command = "{Binding DeleteSelectedCommand}"/>
+            <Grid x:Name="TopGrid" ShowGridLines="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Margin="3,5,3,5" Width="200" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Style="{StaticResource SearchBoxStyle}"/>
+                <ComboBox SelectedIndex="0"  Margin="3,5,3,5"  Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboBoxStyle}">
+                    <ComboBoxItem Name="item1">item1</ComboBoxItem>
+                    <ComboBoxItem Name="item2">item2</ComboBoxItem>
+                    <ComboBoxItem Name="item3">item3</ComboBoxItem>
+                    <ComboBoxItem Name="item4">item4</ComboBoxItem>
+                </ComboBox>
+                <Button Content="Exit" Grid.Column="4" HorizontalAlignment="Right" Margin="3,5,3,5" IsCancel="True"
+                    Command = "{Binding CloseWindow}"
+                    CommandParameter="{Binding ElementName=mainWindow}"/>
+
+                <ToggleButton Margin="3,5,3,5" Content = "SONGS" Grid.Column="0" Style="{StaticResource TabButtonStyle}" IsChecked="{Binding SongsActive, Mode=OneWay}"
+                        Command = "{Binding SongsCommand}"/>
+                <ToggleButton Margin="3,5,3,5" Content = "SETTINGS" Grid.Column="1" Style="{StaticResource TabButtonStyle}" IsChecked="{Binding SettingsActive, Mode=OneWay}"
+                        Command = "{Binding SettingsCommand}"/>
+            </Grid>
+
+            <TabControl Grid.Row="1" Background="{StaticResource BackgroundColor}" BorderThickness="0" TabIndex="0" SelectedIndex="{Binding CurrentTabIndex}">
+                <TabItem Visibility="Collapsed">
+                    <ListBox BorderThickness="0"
+                            x:Name="SongList"
+                            ItemsSource = "{Binding Songs}" 
+                            SelectedItem="{Binding SelectedSong}"
+                            ScrollViewer.CanContentScroll="False" 
+                            SelectionMode="Extended"
+                            HorizontalContentAlignment="Stretch" >
+
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <local:SongItem/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Path" Grid.Row="0"/>
+                        <TextBox Grid.Row="1" Margin="3,5,3,5" Text="{Binding Path=Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PathBoxStyle}"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
-
-        <ListBox
-            x:Name="SongList"
-            Background="#00000000"
-            ItemsSource = "{Binding Songs}" 
-            SelectedItem="{Binding SelectedSong}"
-            ScrollViewer.CanContentScroll="False" 
-            SelectionMode="Extended"
-            HorizontalContentAlignment="Stretch" Grid.Row="1">
-
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected}" />
-                </Style>
-            </ListBox.ItemContainerStyle>
-
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:SongItem/>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
     </Grid>
 </Window>

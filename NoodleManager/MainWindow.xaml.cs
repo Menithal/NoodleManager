@@ -15,7 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace NoodleManager
-{    public partial class MainWindow : Window
+{
+    public partial class MainWindow : Window
     {
         public const int WM_NCHITTEST = 0x84;
         public const int HTCAPTION = 2;

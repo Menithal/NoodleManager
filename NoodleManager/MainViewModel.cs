@@ -45,6 +45,29 @@ namespace NoodleManager
             this.WhenAny(x => x.CurrentTabIndex, x => x.GetValue() == 0).ToPropertyEx(this, x => x.SongsActive);
             this.WhenAny(x => x.CurrentTabIndex, x => x.GetValue() == 1).ToPropertyEx(this, x => x.SettingsActive);
         }
+        /*
+        public static void RegisterUriScheme()
+        {
+            using (var key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\" + UriScheme))
+            {
+                string applicationLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
+                applicationLocation = applicationLocation.Substring(0, applicationLocation.LastIndexOf('.')) + ".exe";
+                Console.WriteLine(applicationLocation);
+
+                key.SetValue("", "URL:" + FriendlyName);
+                key.SetValue("URL Protocol", "");
+
+                using (var defaultIcon = key.CreateSubKey("DefaultIcon"))
+                {
+                    defaultIcon.SetValue("", applicationLocation + ",1");
+                }
+
+                using (var commandKey = key.CreateSubKey(@"shell\open\command"))
+                {
+                    commandKey.SetValue("", "\"" + applicationLocation + "\" \"%1\"");
+                }
+            }
+        }*/
 
         private void DownloadSongs(string path)
         {

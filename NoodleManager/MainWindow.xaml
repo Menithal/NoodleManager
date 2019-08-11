@@ -28,6 +28,8 @@
                 <ResourceDictionary Source="SharedStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
+            <local:NotConverter x:Key="NotConverter" />
+
             <Style x:Key="DefaultButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="{StaticResource ControlBackgroundColor}" />
                 <Setter Property="Foreground" Value="{StaticResource TextColor}" />
@@ -112,7 +114,9 @@
                                     BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" 
+                                              HorizontalScrollBarVisibility="Hidden" 
+                                              VerticalScrollBarVisibility="Hidden"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <DataTrigger Binding="{Binding Path=PathValid}" Value="False">
@@ -138,7 +142,9 @@
                                     BorderThickness="{TemplateBinding BorderThickness}" 
                                     Background="{TemplateBinding Background}"
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" 
+                                              HorizontalScrollBarVisibility="Hidden" 
+                                              VerticalScrollBarVisibility="Hidden"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsFocused" Value="True">
@@ -184,15 +190,16 @@
                 TargetType="ScrollViewer">
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="false">
-                        <Setter Property="Foreground" 
-                            Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
 
             <Style x:Key="ComboBoxStyle"  TargetType="ComboBox">
-                <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
-                <Setter Property="TextElement.Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                <Setter Property="Background" Value="{StaticResource ControlBackgroundColor}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource ControlBorderColor}"/>
                 <Setter Property="FontSize" Value="15" />
                 <Setter Property="Control.Template">
                     <Setter.Value>
@@ -214,10 +221,10 @@
                                     <Grid SnapsToDevicePixels="True" 
                                         MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
                                         MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
-                                        <Border Name="DropDownBorder" Background="{StaticResource ControlBackgroundColor}" Margin="0, 2, 0, 0"
+                                        <Border Name="DropDownBorder" Background="{TemplateBinding Background}" Margin="0, 2, 0, 0"
                                             CornerRadius="0" BorderThickness="2" 
-                                            BorderBrush="{StaticResource ControlBorderColor}"/>
-                                        <ScrollViewer Margin="4,6,4,4" SnapsToDevicePixels="True">
+                                            BorderBrush="{TemplateBinding BorderBrush}"/>
+                                        <ScrollViewer Margin="0,2,0,0" SnapsToDevicePixels="True">
                                             <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                         </ScrollViewer>
                                     </Grid>
@@ -227,6 +234,47 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="ComboBoxItemStyle" TargetType="ComboBoxItem">
+                <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="BorderThickness" Value="2" />
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBoxItem">
+                            <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="2"
+                                    CornerRadius="0"
+                                    Background="{TemplateBinding Background}"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="BorderBrush" Value="{StaticResource SelectedHilightColor}"/>
+                    </Trigger>
+
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource SelectedHilightColor}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Foreground" Value="{StaticResource DisabledTextColor}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
 
@@ -256,32 +304,45 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox Margin="3,5,3,5" Width="200" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Style="{StaticResource SearchBoxStyle}"/>
-                <ComboBox SelectedIndex="0"  Margin="3,5,3,5"  Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource ComboBoxStyle}">
-                    <ComboBoxItem Name="item1">item1</ComboBoxItem>
-                    <ComboBoxItem Name="item2">item2</ComboBoxItem>
-                    <ComboBoxItem Name="item3">item3</ComboBoxItem>
-                    <ComboBoxItem Name="item4">item4</ComboBoxItem>
+                <ToggleButton Margin="3,5,3,5" Content = "SONGS" Grid.Column="0" 
+                              Style="{StaticResource TabButtonStyle}" 
+                              IsChecked="{Binding SongsActive, Mode=OneWay}" 
+                              IsEnabled="{Binding SongsActive, Mode=OneWay, Converter={StaticResource NotConverter}}"
+                              Command = "{Binding SongsCommand}"/>
+                <ToggleButton Margin="3,5,3,5" Content = "SETTINGS" Grid.Column="1" 
+                              Style="{StaticResource TabButtonStyle}" 
+                              IsChecked="{Binding SettingsActive, Mode=OneWay}" 
+                              IsEnabled="{Binding SettingsActive, Mode=OneWay, Converter={StaticResource NotConverter}}"
+                              Command = "{Binding SettingsCommand}"/>
+
+                <TextBox Margin="3,5,3,5" Width="200" Grid.Column="2" 
+                         HorizontalAlignment="Stretch" VerticalAlignment="Center" 
+                         Style="{StaticResource SearchBoxStyle}"/>
+                <ComboBox SelectedIndex="0"  Margin="3,5,3,5"  Grid.Column="3" 
+                          HorizontalAlignment="Center" VerticalAlignment="Center" 
+                          Style="{StaticResource ComboBoxStyle}">
+                    <ComboBoxItem Content="item1" Style="{StaticResource ComboBoxItemStyle}"/>
+                    <ComboBoxItem Content="item2" Style="{StaticResource ComboBoxItemStyle}"/>
+                    <ComboBoxItem Content="item3" Style="{StaticResource ComboBoxItemStyle}"/>
+                    <ComboBoxItem Content="item4" Style="{StaticResource ComboBoxItemStyle}"/>
                 </ComboBox>
                 <Button Content="Exit" Grid.Column="4" HorizontalAlignment="Right" Margin="3,5,3,5" IsCancel="True"
-                    Command = "{Binding CloseWindow}"
-                    CommandParameter="{Binding ElementName=mainWindow}"/>
-
-                <ToggleButton Margin="3,5,3,5" Content = "SONGS" Grid.Column="0" Style="{StaticResource TabButtonStyle}" IsChecked="{Binding SongsActive, Mode=OneWay}"
-                        Command = "{Binding SongsCommand}"/>
-                <ToggleButton Margin="3,5,3,5" Content = "SETTINGS" Grid.Column="1" Style="{StaticResource TabButtonStyle}" IsChecked="{Binding SettingsActive, Mode=OneWay}"
-                        Command = "{Binding SettingsCommand}"/>
+                        Style="{StaticResource DefaultButtonStyle}"
+                        Command = "{Binding CloseWindow}"
+                        CommandParameter="{Binding ElementName=mainWindow}"/>
             </Grid>
 
-            <TabControl Grid.Row="1" Background="{StaticResource BackgroundColor}" BorderThickness="0" TabIndex="0" SelectedIndex="{Binding CurrentTabIndex}">
+            <TabControl Grid.Row="1" Background="{StaticResource BackgroundColor}" BorderThickness="0" TabIndex="0" 
+                        SelectedIndex="{Binding CurrentTabIndex}">
                 <TabItem Visibility="Collapsed">
                     <ListBox BorderThickness="0"
-                            x:Name="SongList"
-                            ItemsSource = "{Binding Songs}" 
-                            SelectedItem="{Binding SelectedSong}"
-                            ScrollViewer.CanContentScroll="False" 
-                            SelectionMode="Extended"
-                            HorizontalContentAlignment="Stretch" >
+                             x:Name="SongList"
+                             ItemsSource = "{Binding Songs}" 
+                             SelectedItem="{Binding SelectedSong}"
+                             Background="{StaticResource BackgroundColor}"
+                             ScrollViewer.CanContentScroll="False" 
+                             SelectionMode="Extended"
+                             HorizontalContentAlignment="Stretch" >
 
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">

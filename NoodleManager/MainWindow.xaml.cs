@@ -16,6 +16,19 @@ using System.Windows.Shapes;
 
 namespace NoodleManager
 {
+    public class NotConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+    }
+
     public partial class MainWindow : Window
     {
         public const int WM_NCHITTEST = 0x84;

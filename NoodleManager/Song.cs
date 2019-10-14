@@ -1,6 +1,7 @@
 ﻿
 using DynamicData;
 using DynamicData.Binding;
+using Newtonsoft.Json;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -15,23 +16,51 @@ namespace NoodleManager
 {
     public class Song : ReactiveObject
     {
+        [JsonProperty(PropertyName = "title")]
         [Reactive] public string Title { get; set; }
+
+        [JsonProperty(PropertyName = "artist")]
         [Reactive] public string Artist { get; set; }
+
+        [JsonProperty(PropertyName = "mapper")]
         [Reactive] public string Mapper { get; set; }
+
+        [JsonProperty(PropertyName = "cover_url")]
         [Reactive] public string Cover_url { get; set; }
+
+        [JsonProperty(PropertyName = "duration")]
         [Reactive] public string Duration { get; set; }
+
+        [JsonProperty(PropertyName = "bmp")]
         [Reactive] public string Bpm { get; set; }
+
+        [JsonProperty(PropertyName = "difficulties")]
         public ObservableCollection<string> Difficulties { get; set; }
+
         [Reactive] public bool IsSelected { get; set; }
+
         [Reactive] public bool IsDownloaded { get; set; }
 
 
-        public string Filename_original { get; set; }
+        [JsonProperty(PropertyName = "filename_original")]
+        public string Filename { get; set; }
+
+        [JsonProperty(PropertyName = "download_url")]
         public string Download_url { get; set; }
+
+        [JsonProperty(PropertyName = "preview_url")]
         public string Preview_url { get; set; }
-        public string Created_at { get; set; }
-        public string Updated_at { get; set; }
+
+        [JsonProperty(PropertyName = "created_at")]
+        public string Created { get; set; }
+
+        [JsonProperty(PropertyName = "updated_at")]
+        public string Updated { get; set; }
+
+        [JsonProperty(PropertyName = "version")]
         public int Version { get; set; }
+
+        [JsonProperty(PropertyName = "id")]
         public int Id { get; set; }
 
         public extern bool Enabled { [ObservableAsProperty] get; }

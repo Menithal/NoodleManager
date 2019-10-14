@@ -15,6 +15,9 @@
     <SolidColorBrush x:Key="StopButtonColor" Color="Orange" />
     <SolidColorBrush x:Key="PlayButtonColor" Color="#FF00A2FF" />
     <SolidColorBrush x:Key="PathInvalidColor" Color="Red" />
+    <SolidColorBrush x:Key="SongBackgroundColor" Color="Black" />
+    <SolidColorBrush x:Key="SongBackgroundDownloadedColor" Color="#FF373737" />
+    <SolidColorBrush x:Key="SongBackgroundSelectedColor" Color="#FFAB00D2" />
 
 
 </ResourceDictionary>

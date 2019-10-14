@@ -9,6 +9,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -45,29 +47,7 @@ namespace NoodleManager
             this.WhenAny(x => x.CurrentTabIndex, x => x.GetValue() == 0).ToPropertyEx(this, x => x.SongsActive);
             this.WhenAny(x => x.CurrentTabIndex, x => x.GetValue() == 1).ToPropertyEx(this, x => x.SettingsActive);
         }
-        /*
-        public static void RegisterUriScheme()
-        {
-            using (var key = Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\" + UriScheme))
-            {
-                string applicationLocation = System.Reflection.Assembly.GetEntryAssembly().Location;
-                applicationLocation = applicationLocation.Substring(0, applicationLocation.LastIndexOf('.')) + ".exe";
-                Console.WriteLine(applicationLocation);
-
-                key.SetValue("", "URL:" + FriendlyName);
-                key.SetValue("URL Protocol", "");
-
-                using (var defaultIcon = key.CreateSubKey("DefaultIcon"))
-                {
-                    defaultIcon.SetValue("", applicationLocation + ",1");
-                }
-
-                using (var commandKey = key.CreateSubKey(@"shell\open\command"))
-                {
-                    commandKey.SetValue("", "\"" + applicationLocation + "\" \"%1\"");
-                }
-            }
-        }*/
+        
 
         private void DownloadSongs(string path)
         {
@@ -79,10 +59,7 @@ namespace NoodleManager
                 content = streamReader.ReadToEnd();
             }
 
-            JsonSerializerOptions options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-
-            ObservableCollection<Song> data = JsonSerializer.Deserialize<ObservableCollection<Song>>(content, options);
+            ObservableCollection<Song> data = JsonConvert.DeserializeObject<ObservableCollection<Song>>(content);
             Songs = data;
             /*
             using (var client = new WebClient())
@@ -99,13 +76,9 @@ namespace NoodleManager
             {
                 string content = e.Result;
 
-                JsonSerializerOptions options = new JsonSerializerOptions();
-                options.PropertyNameCaseInsensitive = true;
-
-                ObservableCollection<Song> data = JsonSerializer.Deserialize<ObservableCollection<Song>>(content, options);
+                ObservableCollection<Song> data = JsonConvert.DeserializeObject<ObservableCollection<Song>>(content);
                 Songs = data;
             }
         }
-
     }
 }

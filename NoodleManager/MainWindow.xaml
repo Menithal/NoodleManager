@@ -275,6 +275,7 @@
                 </Style.Triggers>
             </Style>
 
+            
         </ResourceDictionary>
     </Window.Resources>
 
@@ -347,6 +348,28 @@
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                                <Setter Property="SnapsToDevicePixels" Value="true"/>
+                                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border Name="Border" Padding="0" SnapsToDevicePixels="True" Background="{StaticResource SongBackgroundColor}">
+                                                <ContentPresenter />
+                                            </Border>
+                                            
+                                            <ControlTemplate.Triggers>
+
+                                                <Trigger Property="IsSelected" Value="true">
+                                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource SongBackgroundSelectedColor}"/>
+                                                </Trigger>
+
+                                                <DataTrigger Binding="{Binding IsDownloaded}" Value="true">
+                                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource SongBackgroundDownloadedColor}"/>
+                                                </DataTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </ListBox.ItemContainerStyle>
 
